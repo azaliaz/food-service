@@ -188,44 +188,6 @@ func (h *handler) CreateProduct(w http.ResponseWriter, r *http.Request, params h
 	w.Write(body)
 }
 
-// func (h *handler) DeleteProduct(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-// 	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8888")
-// 	if r.Method != http.MethodDelete {
-// 		http.Error(w, "not allowed", http.StatusMethodNotAllowed)
-// 		return
-// 	}
-// 	id := r.URL.Query().Get("id")
-// 	product, err := h.Storage.GetProduct(id)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return
-// 	}
-
-// 	err = h.Storage.DeleteProduct(id)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusOK)
-
-// 	type Response struct {
-// 		Message      string         `json:"message"`
-// 		SavedProduct models.Product `json:"savedProduct"`
-// 	}
-// 	resp := Response{
-// 		Message:      "successfully deleted product",
-// 		SavedProduct: product,
-// 	}
-
-//		body, err := json.Marshal(resp)
-//		if err != nil {
-//			log.Println(err)
-//			return
-//		}
-//		log.Println(string(body))
-//		w.Write(body)
-//	}
 func (h *handler) DeleteProduct(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8888")
 	if r.Method != http.MethodDelete {
@@ -260,7 +222,6 @@ func (h *handler) DeleteProduct(w http.ResponseWriter, r *http.Request, params h
 		return
 	}
 
-	// Создание структуры ответа
 	type Response struct {
 		Message       string         `json:"message"`
 		SavedProduct  models.Product `json:"savedProduct"`

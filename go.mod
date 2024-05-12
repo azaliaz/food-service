@@ -1,4 +1,4 @@
-module github.com/salavad/food-service
+module github.com/azaliaz/food-service
 
 go 1.22.2
 

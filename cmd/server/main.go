@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/salavad/food-service/internal/db/postgres"
-	"github.com/salavad/food-service/internal/models"
-	"github.com/salavad/food-service/internal/server/rest"
+	"github.com/azaliaz/food-service/internal/db/postgres"
+	"github.com/azaliaz/food-service/internal/models"
+	"github.com/azaliaz/food-service/internal/server/rest"
 )
 
 func main() {
@@ -28,6 +28,7 @@ func main() {
 type Storage interface {
 	InsertProduct(product models.Product) error
 	GetProducts(mealtype string) ([]models.Product, error)
+	GetProduct(id string) (models.Product, error)
 	GetSumCalories(mealtype string) (float64, float64, float64, float64, error)
 	CreateUser(user *models.User) error
 	Find(id int) (*models.User, error)

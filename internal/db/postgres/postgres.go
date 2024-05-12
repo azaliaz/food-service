@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/azaliaz/food-service/internal/models"
 	_ "github.com/lib/pq"
-	"github.com/salavad/food-service/internal/models"
 )
 
 type Postgres struct {
@@ -97,6 +97,21 @@ func (p Postgres) GetProducts(mealtype string) ([]models.Product, error) {
 		products = append(products, product)
 	}
 	return products, nil
+}
+
+func (p Postgres) GetProduct(id string) (models.Product, error) {
+	query := `SELECT name, mealtype, fat, grams, protein, carbohydrates, calories, id from products WHERE id = $1`
+	row := p.Conn.QueryRow(query, id)
+	if row.Err() != nil {
+		return models.Product{}, row.Err()
+	}
+
+	var product models.Product
+	err := row.Scan(&product.Name, &product.Mealtype, &product.Fat, &product.Grams, &product.Protein, &product.Carbohydrates, &product.Calories, &product.ID)
+	if err != nil {
+		return models.Product{}, err
+	}
+	return product, nil
 }
 
 func (p Postgres) GetSumCalories(mealtype string) (float64, float64, float64, float64, error) {

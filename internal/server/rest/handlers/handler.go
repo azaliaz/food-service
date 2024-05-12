@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/azaliaz/food-service/internal/models"
 	"github.com/julienschmidt/httprouter"
-	"github.com/salavad/food-service/internal/models"
 )
 
 type handler struct {
@@ -16,6 +16,7 @@ type handler struct {
 type Storage interface {
 	InsertProduct(product models.Product) error
 	GetProducts(mealtype string) ([]models.Product, error)
+	GetProduct(id string) (models.Product, error)
 	GetSumCalories(mealtype string) (float64, float64, float64, float64, error)
 	DeleteProduct(id string) error
 }
@@ -187,6 +188,44 @@ func (h *handler) CreateProduct(w http.ResponseWriter, r *http.Request, params h
 	w.Write(body)
 }
 
+// func (h *handler) DeleteProduct(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+// 	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8888")
+// 	if r.Method != http.MethodDelete {
+// 		http.Error(w, "not allowed", http.StatusMethodNotAllowed)
+// 		return
+// 	}
+// 	id := r.URL.Query().Get("id")
+// 	product, err := h.Storage.GetProduct(id)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return
+// 	}
+
+// 	err = h.Storage.DeleteProduct(id)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(http.StatusOK)
+
+// 	type Response struct {
+// 		Message      string         `json:"message"`
+// 		SavedProduct models.Product `json:"savedProduct"`
+// 	}
+// 	resp := Response{
+// 		Message:      "successfully deleted product",
+// 		SavedProduct: product,
+// 	}
+
+//		body, err := json.Marshal(resp)
+//		if err != nil {
+//			log.Println(err)
+//			return
+//		}
+//		log.Println(string(body))
+//		w.Write(body)
+//	}
 func (h *handler) DeleteProduct(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8888")
 	if r.Method != http.MethodDelete {
@@ -194,20 +233,181 @@ func (h *handler) DeleteProduct(w http.ResponseWriter, r *http.Request, params h
 		return
 	}
 	id := r.URL.Query().Get("id")
-	err := h.Storage.DeleteProduct(id)
+	product, err := h.Storage.GetProduct(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = h.Storage.DeleteProduct(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories("breakfast")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories("lunch")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories("dinner")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Создание структуры ответа
+	type Response struct {
+		Message       string         `json:"message"`
+		SavedProduct  models.Product `json:"savedProduct"`
+		TotalCalories struct {
+			Breakfast struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			} `json:"breakfast"`
+			Lunch struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			} `json:"lunch"`
+			Dinner struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			} `json:"dinner"`
+		} `json:"totalCalories"`
+	}
+
+	resp := Response{
+		Message:      "successfully deleted product",
+		SavedProduct: product,
+		TotalCalories: struct {
+			Breakfast struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			} `json:"breakfast"`
+			Lunch struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			} `json:"lunch"`
+			Dinner struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			} `json:"dinner"`
+		}{
+			Breakfast: struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			}{
+				Calories:     breakfastCalories,
+				Protein:      breakfastProtein,
+				Fat:          breakfastFat,
+				Carbohydrate: breakfastCarbo,
+			},
+			Lunch: struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			}{
+				Calories:     lunchCalories,
+				Protein:      lunchProtein,
+				Fat:          lunchFat,
+				Carbohydrate: lunchCarbo,
+			},
+			Dinner: struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			}{
+				Calories:     dinnerCalories,
+				Protein:      dinnerProtein,
+				Fat:          dinnerFat,
+				Carbohydrate: dinnerCarbo,
+			},
+		},
+	}
+
+	body, err := json.Marshal(resp)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "product deleted"})
+	w.Write(body)
 }
 
 func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8888")
 
 	mealtype := r.URL.Query().Get("mealtype")
+	if mealtype == "" {
+		breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories("breakfast")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories("lunch")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories("dinner")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		type Response struct {
+			Message       string
+			TotalNutriens struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			} `json:"totalNutriens"`
+		}
+
+		resp := Response{
+			Message: "successfully created product",
+			TotalNutriens: struct {
+				Calories     float64 `json:"calories"`
+				Protein      float64 `json:"protein"`
+				Fat          float64 `json:"fat"`
+				Carbohydrate float64 `json:"carbohydrate"`
+			}{
+				Calories:     breakfastCalories + lunchCalories + dinnerCalories,
+				Protein:      breakfastProtein + lunchProtein + dinnerProtein,
+				Fat:          breakfastFat + lunchFat + dinnerFat,
+				Carbohydrate: breakfastCarbo + lunchCarbo + dinnerCarbo,
+			},
+		}
+		body, err := json.Marshal(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		w.Write(body)
+		return
+	}
 
 	products, err := h.Storage.GetProducts(mealtype)
 	if err != nil {

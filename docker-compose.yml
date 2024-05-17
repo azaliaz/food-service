@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   postgres:
+    networks:
+      - network-backend
     container_name: postgres
     restart: always
     image: postgres:alpine  
@@ -17,15 +19,17 @@ services:
     volumes:
       - postgres:/data/postgres
     env_file:
-      - .env
+      - api/.env
     ports:
       - 5432:5432
   migrate:
+    networks:
+      - network-backend
     container_name: migrate
     image: migrate/migrate:v4.15.2
     profiles:  ["tools"]
     volumes:
-      - ./migrations:/migrations
+      - ./api/migrations:/migrations
     entrypoint: [
       "migrate",
       "-path",
@@ -39,9 +43,11 @@ services:
         condition: service_healthy
     restart: on-failure
   api:
+    networks:
+      - network-backend
     container_name: api
     build:
-      context: ./
+      context: ./api/
       dockerfile: Dockerfile
     command: ./main 
     ports:
@@ -51,6 +57,20 @@ services:
         condition: service_healthy
     restart: on-failure
     env_file:
-      - .env
+      - api/.env
+  frontend:
+    networks:
+      - network-backend
+    container_name: frontend
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - 8888:8888
+    depends_on:
+      - api
+    restart: on-failure
 volumes:
   postgres: null
+networks:
+  network-backend:

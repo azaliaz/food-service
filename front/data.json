@@ -1,0 +1,183 @@
+{
+    "products": [
+        {
+            "name": "Яблоко",
+            "calories": 52,
+            "protein": 0.3,
+            "fat": 0.2,
+            "carbohydrates": 14
+        },
+        {
+            "name": "Банан",
+            "calories": 89,
+            "protein": 1.1,
+            "fat": 0.3,
+            "carbohydrates": 23
+        },
+        {
+            "name": "Молоко",
+            "calories": 42,
+            "protein": 3.4,
+            "fat": 1.5,
+            "carbohydrates": 4.8
+        },
+        {
+            "name": "Куриное филе",
+            "calories": 165,
+            "protein": 31,
+            "fat": 3.6,
+            "carbohydrates": 0.1
+        },
+        {
+            "name": "Огурец",
+            "calories": 15,
+            "protein": 0.6,
+            "fat": 0.1,
+            "carbohydrates": 3.6
+        },
+        {
+            "name": "Морковь",
+            "calories": 41,
+            "protein": 0.9,
+            "fat": 0.2,
+            "carbohydrates": 10
+        },
+        {
+            "name": "Картофель",
+            "calories": 77,
+            "protein": 2,
+            "fat": 0.1,
+            "carbohydrates": 17.5
+        },
+        {
+            "name": "Рис",
+            "calories": 130,
+            "protein": 2.7,
+            "fat": 0.3,
+            "carbohydrates": 28.7
+        },
+        {
+            "name": "Свинина",
+            "calories": 242,
+            "protein": 25.6,
+            "fat": 15.4,
+            "carbohydrates": 0.1
+        },
+        {
+            "name": "Говядина",
+            "calories": 250,
+            "protein": 26.8,
+            "fat": 15.6,
+            "carbohydrates": 0.1
+        },
+        {
+            "name": "Курица",
+            "calories": 239,
+            "protein": 27.3,
+            "fat": 13.5,
+            "carbohydrates": 0.1
+        },
+        {
+            "name": "Карп",
+            "calories": 97,
+            "protein": 17,
+            "fat": 2,
+            "carbohydrates": 0.1
+        },
+        {
+            "name": "Макароны",
+            "calories": 158,
+            "protein": 5.8,
+            "fat": 1.1,
+            "carbohydrates": 31.7
+        },
+        {
+            "name": "Гречка",
+            "calories": 343,
+            "protein": 12.6,
+            "fat": 2,
+            "carbohydrates": 71.7
+        },
+        {
+            "name": "Творог",
+            "calories": 154,
+            "protein": 18,
+            "fat": 5,
+            "carbohydrates": 3.4
+        }
+    ],
+    "dishes": [
+        {
+            "name": "Омлет",
+            "calories": 154,
+            "protein": 12,
+            "fat": 11,
+            "carbohydrates": 1
+        },
+        {
+            "name": "Салат Цезарь",
+            "calories": 250,
+            "protein": 25,
+            "fat": 15,
+            "carbohydrates": 6
+        },
+        {
+            "name": "Борщ",
+            "calories": 89,
+            "protein": 2.4,
+            "fat": 3.7,
+            "carbohydrates": 10
+        },
+        {
+            "name": "Пицца",
+            "calories": 285,
+            "protein": 12,
+            "fat": 10,
+            "carbohydrates": 30
+        },
+        {
+            "name": "Суп-гаспачо",
+            "calories": 120,
+            "protein": 2.5,
+            "fat": 7,
+            "carbohydrates": 17
+        },
+        {
+            "name": "Бургер",
+            "calories": 300,
+            "protein": 15,
+            "fat": 18,
+            "carbohydrates": 25
+        }
+    ],
+    "drinks": [
+        {
+            "name": "Свежевыжатый апельсиновый сок",
+            "calories": 112,
+            "protein": 1.7,
+            "fat": 0.5,
+            "carbohydrates": 26
+        },
+        {
+            "name": "Кофе без сахара",
+            "calories": 2,
+            "protein": 0.3,
+            "fat": 0,
+            "carbohydrates": 0
+        },
+        {
+            "name": "Чай без сахара",
+            "calories": 1,
+            "protein": 0.1,
+            "fat": 0,
+            "carbohydrates": 0.1
+        },
+        {
+            "name": "Молочный коктейль",
+            "calories": 160,
+            "protein": 8,
+            "fat": 5,
+            "carbohydrates": 20
+        }
+    ]
+}

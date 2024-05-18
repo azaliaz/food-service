@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div class="username__form">
+    <div class="username__form"  style="display: none;">
         <div class="username__form-input">
             <h2>Введите ваше имя:</h2>
             <input type="text" class="username__input" id="usernameInput" placeholder="Введите имя">
@@ -30,7 +30,7 @@
         <button onclick="submitUsername()" class="submit__btn btn">Войти</button>
     </div>
     
-    <div id="main-content" style="display: none;">
+    <div id="main-content">
         <header class="header" id="header">
             <div class="container">
                 <div class="offer">
@@ -41,8 +41,13 @@
                 </div>
             </div>
         </header>
-        <section class="weight" id="weight">
+        <section class="weightCalendar" id="weightCalendar">
             <div class="container">
+                <div class="date__block">
+                    <h2 class="data__calendar">Дата: </h2>
+                    <input type="date" name="calendar" id="dateCalendar" class="dateCalendar">
+                    <a href="#" id="submit-date" сlass="date__btn btn">Выбрать</a>
+                </div>
                 <div class="weight__block">
                     <div class="weight__block-title">
                         <h2 class="weightValue">Вес</h2>
@@ -50,7 +55,7 @@
                         <h2 class="targetValue">Цель</h2>
                         <span id="targetWeightDisplay"></span>
                     </div>
-                    <a href="#" class="weight__btn" id="addWeightBtn">
+                    <a href="#" id="addWeightBtn" class="weight__btn btn">
                     </a>
                 </div>
              </div>

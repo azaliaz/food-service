@@ -251,15 +251,18 @@ function closeProductsModal() {
 }
 
 function submitUsername() {
-    const usernameInput = document.getElementById('usernameInput');
-    const username = usernameInput.value.trim();
-    if (username !== '') {
-        localStorage.setItem('username', username);
-        document.querySelector('.username__form').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-    } else {
-        alert('Пожалуйста, введите имя пользователя.');
-    }
+    const usernameInput = document.getElementById('usernameInput').value;
+    const email = document.getElementById('emailInput').value;
+    const password = document.getElementById('passwordInput').value;
+    // const usernameInput = document.getElementById('usernameInput');
+    // const username = usernameInput.value.trim();
+    // if (username !== '') {
+    //     localStorage.setItem('username', username);
+    //     document.querySelector('.username__form').style.display = 'none';
+    //     document.getElementById('main-content').style.display = 'block';
+    // } else {
+    //     alert('Пожалуйста, введите имя пользователя.');
+    // }
 }
 
 window.addEventListener('load', function() {

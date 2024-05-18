@@ -16,11 +16,20 @@
 <body>
     <div class="username__form">
         <div class="username__form-input">
-            <h2>Введите имя пользователя:</h2>
+            <h2>Введите ваше имя:</h2>
             <input type="text" class="username__input" id="usernameInput" placeholder="Введите имя">
-            <button onclick="submitUsername()" class="submit__btn btn">Отправить</button>
         </div>
+        <div class="username__form-input">
+            <h2>Укажите вашу почту:</h2>
+            <input type="email" class="username__input" id="emailInput" placeholder="example@example.com">
+        </div>
+        <div class="username__form-input">
+            <h2>Пароль:</h2>
+            <input type="password" class="username__input" id="passwordInput" placeholder="Введите пароль">
+        </div>
+        <button onclick="submitUsername()" class="submit__btn btn">Войти</button>
     </div>
+    
     <div id="main-content" style="display: none;">
         <header class="header" id="header">
             <div class="container">
@@ -32,6 +41,20 @@
                 </div>
             </div>
         </header>
+        <section class="weight" id="weight">
+            <div class="container">
+                <div class="weight__block">
+                    <div class="weight__block-title">
+                        <h2 class="weightValue">Вес</h2>
+                        <span id="currentWeightDisplay"></span>
+                        <h2 class="targetValue">Цель</h2>
+                        <span id="targetWeightDisplay"></span>
+                    </div>
+                    <a href="#" class="weight__btn" id="addWeightBtn">
+                    </a>
+                </div>
+             </div>
+        </section>
         <section class="routes" id="routes">
             <div class="container">
                 <div class="routes__info">
@@ -188,7 +211,7 @@
         <div id="modal" class="modal" onclick="closeModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="input-container">
-                    <input type="text" id="searchInput" placeholder="Поиск блюд или продуктов">
+                    <input type="text" id="searchInput" class="searchInput" placeholder="Поиск блюд или продуктов">
                     <span class="close" onclick="closeModal('modal__gramm')">&times;</span>
                 </div>
                 <div class="input-container">
@@ -239,8 +262,44 @@
             </div>
         </div>
     </div>
-    
-    
+    <div id="weightModal" class="weightModal">
+        <div class="weightModal-content">
+            <div class="button__close">
+                <span class="close-weight">&times;</span>
+            </div>
+            <h2 class="myWeight"> Мой вес</h2>
+            <form id="weightForm">
+                <p class="weight-text">Рост:</p>
+                <input type="number" id="initialHeight" name="initialHeight" class="modalWeight__input" step="0.01" required>
+                <p class="weight-text">Пол:</p>
+                <select id="initialGender" name="initialGender" class="modalWeight__input" required>
+                    <option value="male">Мужской</option>
+                    <option value="female">Женский</option>
+                </select>
+                <p class="weight-text">Начальный вес:</p>
+                <input type="number" id="initialWeight" name="initialWeight" class="modalWeight__input" step="0.01" required>
+                <p class="weight-text">Текущий вес:</p>
+                <input type="number" id="currentWeight" name="currentWeight" class="modalWeight__input" step="0.01" required>
+                <p class="weight-text">Желанный вес:</p>
+                <input type="number" id="targetWeight" name="targetWeight" class="modalWeight__input" step="0.01" required>
+                <button type="submit" class="weightModal__btn btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+    <div id="alertModal" class="weightModal">
+        <div class="alertModal-content">
+            <div class="button__close">
+                <span class="close-alert">&times;</span>
+            </div>
+            <h2 class="allert">Предупреждение</h2>
+            <p id="alertMessage" class="alertMessage"></p>
+            <button id="saveAnywayBtn" class="alert__btn btn">Сохранить</button>
+        </div>
+    </div>
+    <!-- <script type="module">
+        import Datepicker from 'https://cdn.jsdelivr.net/npm/datepicker@3.1.3/dist/datepicker.min.js';
+    </script>     -->
+    <script src="js/modalweight.js"></script>
 	<script src="js/main.js"></script>
 </body>
 </html>

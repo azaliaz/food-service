@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Good</title>
+    <meta name="description" content="Питаться правильно">
+    <meta name="keywords" content="Еда, калории, здоровый образ жизни">
+    <meta property="og:title" content="Code Travel">
+    <meta property="og:description" content="Полезная еда">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Count calories">
+    <meta name="theme-color" content="#808590">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    
+    <div id="main-content">
+        <header class="header" id="header">
+            <div class="container">
+                <div class="offer">
+                    <h1 class="offer__title">
+                        питаться правильно  —  просто
+                    </h1>
+                    <a href="#" class="arrow-down"></a>
+                </div>
+            </div>
+        </header>
+        <section class="weightCalendar" id="weightCalendar">
+            <div class="container">
+                <div class="date__block">
+                    <h2 class="data__calendar">Дата: </h2>
+                    <input type="date" name="calendar" id="dateCalendar" class="dateCalendar">
+                    <a href="#" id="submit-date" сlass="date__btn btn">Выбрать</a>
+                </div>
+                <div class="weight__block">
+                    <div class="weight__block-title">
+                        <h2 class="weightValue">Вес</h2>
+                        <span id="currentWeightDisplay"></span>
+                        <h2 class="targetValue">Цель</h2>
+                        <span id="targetWeightDisplay"></span>
+                    </div>
+                    <a href="#" id="addWeightBtn" class="weight__btn btn">
+                    </a>
+                </div>
+             </div>
+        </section>
+        <section class="routes" id="routes">
+            <div class="container">
+                <div class="routes__info">
+                    <div class="section__title">
+                        <h2 class="section__title-text">Калории</h2>
+                        <span class="section__title-sum" id="count_of_calories"></span>
+                    </div>
+                    <div class="section__info">
+                        <h2 class="section__info-text">
+                            Белки
+                        </h2>
+                        <span class="section__info-sum" id="count_of_protein"></span>
+                    </div>
+                    <div class="section__info">
+                        <h2 class="section__info-text">
+                            Жиры
+                        </h2>
+                        <span class="section__info-sum" id="count_of_fat"></span>
+                    </div>
+                    <div class="section__info">
+                        <h2 class="section__info-text">
+                            Углеводы
+                        </h2>
+                        <span class="section__info-sum" id="count_of_carb"></span>
+                    </div>
+                </div>            
+                <div class="dest">
+                    <div class="dest__item">
+                        <div class="dest__wrapper">
+                            <div class="dest__info">
+                                <h3 class="dest__title">
+                                    Завтрак
+                                </h3>
+                                <span class="cal" id="count_of_calories_breakfast"></span>
+                                
+                            </div>
+                            <p class="dest_desc">
+                                помогает начать день с энергии и питательных веществ, которые организму нужны для активности и концентрации.
+                            </p>
+                            <a href="#" class="offer__btn btn" onclick="openModal('breakfast')" data-mealType="breakfast">
+                                Добавить
+                            </a>
+                            <div class="dest__info-wrap">
+                                <a href="#" class="dest__btn" id="openProductsButton" onclick="openProductsModal('breakfast')" data-mealType="breakfast">
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="dest__item">
+                        <div class="dest__wrapper">
+                            <div class="dest__info">
+                                <h3 class="dest__title">
+                                    Обед
+                                </h3>
+                                <span class="cal" id="count_of_calories_lunch"></span>
+                                
+                            </div>
+                            <p class="dest_desc">
+                                обеспечивает организм необходимыми питательными веществами для поддержания энергии и бодрости в течение дня.                       
+                            </p>
+                            <a href="#" class="offer__btn btn" onclick="openModal('lunch')" data-mealType="lunch">
+                                Добавить
+                            </a>
+                            <div class="dest__info-wrap">
+                                <a href="#" class="dest__btn" id="openProductsButton" onclick="openProductsModal('lunch')" data-mealType="lunch">
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="dest__item">
+                        <div class="dest__wrapper">
+                            <div class="dest__info">
+                                <h3 class="dest__title">
+                                    Ужин
+                                </h3>
+                                <span class="cal" id="count_of_calories_dinner"></span>
+                                
+                            </div>
+                            <p class="dest_desc">
+                                Легкий и сбалансированный ужин обеспечивает хороший сон и поддерживает здоровье организма в целом.                       
+                            </p>
+                            <a href="#" class="offer__btn btn" onclick="openModal('dinner')" data-mealType="dinner">
+                                Добавить
+                            </a>
+                            <div class="dest__info-wrap">
+                                <a href="#" class="dest__btn" id="openProductsButton" onclick="openProductsModal('dinner')" data-mealType="dinner">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="branches" id="branches">
+            <div class="container">
+                <h2 class="diet-title">
+                    Диета
+                </h2>
+                <div class="services">
+                    <div class="services-block">
+                        <div class="services__item">
+                            <img src="img/img1.png" alt="Белковая диета" class="services__img">
+                            <div class="services__wrapper">
+                                <h3 class="services__title ">
+                                    Белковая диета
+                                </h3>
+                                <p class="services__text">
+                                    основное внимание уделяется белкам, а ограничивается потребление углеводов и жиров. Она обычно включает в себя продукты, богатые белком, такие как мясо, рыба, яйца, тофу и молочные продукты.
+                                </p>
+                        
+                            </div>
+                        </div>
+                        <div class="services__item">
+                            <img src="img/img2.png" alt="Интервальное голодание" class="services__img">
+                            <div class="services__wrapper">
+                                <h3 class="services__title">
+                                    Интервальное голодание
+                                </h3>
+                                <p class="services__text">
+                                    метод питания, при котором чередуются периоды еды с периодами поста. Например, 16/8 - 8 часов питания, 16 часов голодания. Этот метод может помочь снизить вес и улучшить обмен веществ.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="services-block">
+                        <div class="services__item">
+                            <img src="img/sred_dieta.png" alt="Средиземноморская диета" class="services__img">
+                            <div class="services__wrapper">
+                                <h3 class="services__title">
+                                    Средиземноморская диета
+                                </h3>
+                                <p class="services__text">
+                                    это питание, основанное на умеренном потреблении свежих фруктов, овощей, оливкового масла, рыбы, орехов и зерновых. Она позволяет умеренное количество белков и жиров, с акцентом на натуральных источниках углеводов.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="services__item">
+                            <img src="img/krtodiet.png" alt="Кето-диета" class="services__img">
+                            <div class="services__wrapper">
+                                <h3 class="services__title">
+                                    Кето-диета
+                                </h3>
+                                <p class="services__text">
+                                    основной упор делается на потребление жиров, умеренное потребление белков и очень низкое потребление углеводов. продукты: масло, мясо, рыбу, яйца, орехи, сыр и низкоуглеводные овощи, такие как брокколи и шпинат.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div id="modal" class="modal" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="input-container">
+                    <input type="text" id="searchInput" class="searchInput" placeholder="Поиск блюд или продуктов">
+                    <span class="close" onclick="closeModal('modal__gramm')">&times;</span>
+                </div>
+                <div class="input-container">
+                    <ul id="suggestions"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="modal__gramm" class="modal__gramm" onclick="closeModal()">
+            <div class="modal__gramm-content" onclick="event.stopPropagation()">
+                <input type="hidden" id="selectedProductInfo">
+                <div class="input__gramm-container">
+                    <input type="number" id="caloriesInput" placeholder="Введите количество грамм">
+                    <span class="close" id="closeModalGramm">&times;</span>
+                </div>
+                <button id="confirmButton" class="save__btn btn">Сохранить</button>
+                <div class="info">
+                    <div class="info__block">
+                        <div class="info-display">
+                            <p class = "cal-text">Калории:</p> <span id="caloriesValue" class="info-displayNutr"></span>
+                        </div>
+                        <div class="info-display">
+                            <p class ="info__text">Белки: </p> <span id="proteinValue" class="info-displayNutr"></span>
+                        </div>
+                    </div>
+                    <div class="info__block">
+                        <div class="info-display"> 
+                            <p class="info__text">Жиры: </p> <span id="fatValue" class="info-displayNutr"></span>
+                        </div>
+                        <div class="info-display">
+                            <p class="info__text">Углеводы:</p><span id="carbValue" class="info-displayNutr"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="modal__productBackdrop" class="modal__productBackdrop">
+            <div id="modal_products" class="modal__product">
+                <div class="button__close">
+                    <span class="close-product" onclick="closeProductsModal()">&times;</span>
+                </div>
+                <div class="modal__product_content">             
+                    <div class="products__list">
+                        <ul id="productList"></ul>
+                    </div>
+                    <p class="modal-info" id="information">
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="weightModal" class="weightModal">
+        <div class="weightModal-content">
+            <div class="button__close">
+                <span class="close-weight">&times;</span>
+            </div>
+            <h2 class="myWeight"> Мой вес</h2>
+            <form id="weightForm">
+                <p class="weight-text">Рост:</p>
+                <input type="number" id="initialHeight" name="initialHeight" class="modalWeight__input" step="0.01" required>
+                <p class="weight-text">Пол:</p>
+                <select id="initialGender" name="initialGender" class="modalWeight__input" required>
+                    <option value="male">Мужской</option>
+                    <option value="female">Женский</option>
+                </select>
+                <p class="weight-text">Начальный вес:</p>
+                <input type="number" id="initialWeight" name="initialWeight" class="modalWeight__input" step="0.01" required>
+                <p class="weight-text">Текущий вес:</p>
+                <input type="number" id="currentWeight" name="currentWeight" class="modalWeight__input" step="0.01" required>
+                <p class="weight-text">Желанный вес:</p>
+                <input type="number" id="targetWeight" name="targetWeight" class="modalWeight__input" step="0.01" required>
+                <button type="submit" class="weightModal__btn btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+    <div id="alertModal" class="weightModal">
+        <div class="alertModal-content">
+            <div class="button__close">
+                <span class="close-alert">&times;</span>
+            </div>
+            <h2 class="allert">Предупреждение</h2>
+            <p id="alertMessage" class="alertMessage"></p>
+            <button id="saveAnywayBtn" class="alert__btn btn">Сохранить</button>
+        </div>
+    </div>
+    
+    <script src="js/modalweight.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>

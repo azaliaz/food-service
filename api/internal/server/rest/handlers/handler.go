@@ -5,6 +5,7 @@ import (
 	"github.com/azaliaz/food-service/internal/models"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -14,11 +15,12 @@ type handler struct {
 }
 
 type Storage interface {
-	InsertProduct(username string, product models.Product) error
-	GetProducts(username, mealtype string) ([]models.Product, error)
-	GetProduct(username, id string) (models.Product, error)
-	GetSumCalories(username, mealtype string) (float64, float64, float64, float64, error)
-	DeleteProduct(username, id string) error
+	AuthUser(username, password string) (int, error)
+	InsertProduct(userID int, product models.Product, date string) error
+	GetProducts(userID int, mealtype string, date string) ([]models.Product, error)
+	GetProduct(userID int, productID int, date string) (models.Product, error)
+	GetSumCalories(userID int, mealtype string, date string) (float64, float64, float64, float64, error)
+	DeleteProduct(userID int, productID int, date string) error
 }
 
 type Handler interface {
@@ -37,6 +39,8 @@ func (h *handler) Register(router *httprouter.Router) {
 	router.GET("/products", h.GetProducts)
 	router.DELETE("/products", h.DeleteProduct)
 	router.OPTIONS("/products", h.CheckOptions)
+	router.POST("/users", h.Auth)
+	router.OPTIONS("/users", h.CheckOptions)
 }
 
 func (h *handler) CheckOptions(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -50,13 +54,47 @@ func (h *handler) CheckOptions(w http.ResponseWriter, r *http.Request, params ht
 	return
 }
 
+func (h *handler) Auth(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	type Request struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	var req Request
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println(req)
+
+	userID, err := h.Storage.AuthUser(req.Username, req.Password)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	type Response struct {
+		UserID int `json:"user_id"`
+	}
+	resp := Response{UserID: userID}
+
+	body, err := json.Marshal(resp)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println(string(body))
+	w.Write(body)
+}
+
 func (h *handler) CreateProduct(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	type Request struct {
-		Username string         `json:"username"`
-		Product  models.Product `json:"product"`
+		UserID  string         `json:"userID"`
+		Date    string         `json:"date"`
+		Product models.Product `json:"product"`
 	}
 
 	var req Request
@@ -67,22 +105,28 @@ func (h *handler) CreateProduct(w http.ResponseWriter, r *http.Request, params h
 	}
 	log.Println(req)
 
-	err = h.Storage.InsertProduct(req.Username, req.Product)
+	userID, err := strconv.Atoi(req.UserID)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories(req.Username, "breakfast")
+
+	err = h.Storage.InsertProduct(userID, req.Product, req.Date)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories(req.Username, "lunch")
+	breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories(userID, "breakfast", req.Date)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories(req.Username, "dinner")
+	lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories(userID, "lunch", req.Date)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories(userID, "dinner", req.Date)
 	if err != nil {
 		log.Println(err)
 		return
@@ -188,30 +232,31 @@ func (h *handler) DeleteProduct(w http.ResponseWriter, r *http.Request, params h
 		http.Error(w, "not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	id := r.URL.Query().Get("id")
-	username := r.URL.Query().Get("username")
-	product, err := h.Storage.GetProduct(username, id)
+	productID, err := strconv.Atoi(r.URL.Query().Get("id"))
+	userID, err := strconv.Atoi(r.URL.Query().Get("user_id"))
+	date := r.URL.Query().Get("date")
+	product, err := h.Storage.GetProduct(userID, productID, date)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	err = h.Storage.DeleteProduct(username, id)
+	err = h.Storage.DeleteProduct(userID, productID, date)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories(username, "breakfast")
+	breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories(userID, "breakfast", date)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories(username, "lunch")
+	lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories(userID, "lunch", date)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories(username, "dinner")
+	dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories(userID, "dinner", date)
 	if err != nil {
 		log.Println(err)
 		return
@@ -315,19 +360,24 @@ func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request, params htt
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	mealtype := r.URL.Query().Get("mealtype")
-	username := r.URL.Query().Get("username")
+	userID, err := strconv.Atoi(r.URL.Query().Get("user_id"))
+	if err != nil {
+		log.Println(err)
+	}
+	date := r.URL.Query().Get("date")
+	log.Println(mealtype, userID, date)
 	if mealtype == "" {
-		breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories(username, "breakfast")
+		breakfastCalories, breakfastProtein, breakfastFat, breakfastCarbo, err := h.Storage.GetSumCalories(userID, "breakfast", date)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories(username, "lunch")
+		lunchCalories, lunchProtein, lunchFat, lunchCarbo, err := h.Storage.GetSumCalories(userID, "lunch", date)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories(username, "dinner")
+		dinnerCalories, dinnerProtein, dinnerFat, dinnerCarbo, err := h.Storage.GetSumCalories(userID, "dinner", date)
 		if err != nil {
 			log.Println(err)
 			return
@@ -366,7 +416,7 @@ func (h *handler) GetProducts(w http.ResponseWriter, r *http.Request, params htt
 		return
 	}
 
-	products, err := h.Storage.GetProducts(username, mealtype)
+	products, err := h.Storage.GetProducts(userID, mealtype, date)
 	if err != nil {
 		log.Println(err)
 		return

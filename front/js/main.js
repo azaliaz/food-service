@@ -164,7 +164,7 @@ function updateTotalCaloriesDisplay(totalCalories) {
     proteinDisplay.textContent = totalProteinSum.toFixed(2);
     fatDisplay.textContent = totalFatSum.toFixed(2);
     carbDisplay.textContent = totalCarbohydrateSum.toFixed(2);
-
+    
     localStorage.setItem('totalCalories', JSON.stringify(totalCalories));
 }
 
@@ -172,7 +172,9 @@ function updateTotalCaloriesDisplay(totalCalories) {
 function openProductsModal(mealType) {
     document.getElementById("modal__productBackdrop").style.display = "block";
     console.log('Meal type in openProductsModal:', mealType);
-    fetch(`http://localhost:3000/products?mealtype=${mealType}&username=${localStorage.getItem('username')}`)
+    const user_id = localStorage.getItem('user_id');
+    console.log('user_id:', user_id);
+    fetch(`http://localhost:3000/products?mealtype=${mealType}&user_id=${localStorage.getItem('user_id')}&date=${localStorage.getItem('selectedDate')}`)
         .then(response => response.json())
         .then(data => {
             console.log('Data received from server:', data);
@@ -218,14 +220,8 @@ function openProductsModal(mealType) {
         })
         .catch(error => console.error('Ошибка при загрузке продуктов:', error));
 }
-
-
-
-
-
-
 function deleteProduct(productId, mealType) {
-    fetch(`http://localhost:3000/products?id=${productId}&username=${localStorage.getItem('username')}`, {
+    fetch(`http://localhost:3000/products?id=${productId}&user_id=${localStorage.getItem('user_id')}&date=${localStorage.getItem('selectedDate')}`, {
         method: 'DELETE',
     })
     .then(response => {
@@ -238,6 +234,7 @@ function deleteProduct(productId, mealType) {
         console.log('Продукт успешно удален:', data);
         openProductsModal(mealType);
         updateTotalCaloriesDisplay(data.totalCalories);
+        localStorage.setItem('products', JSON.stringify(data.products));
     })
     .catch(error => console.error('Ошибка при удалении продукта:', error));
 }
@@ -250,32 +247,11 @@ function closeProductsModal() {
     modal.style.display = "none";
 }
 
-function submitUsername() {
-    const usernameInput = document.getElementById('usernameInput').value;
-    const email = document.getElementById('emailInput').value;
-    const password = document.getElementById('passwordInput').value;
-    // const usernameInput = document.getElementById('usernameInput');
-    // const username = usernameInput.value.trim();
-    // if (username !== '') {
-    //     localStorage.setItem('username', username);
-    //     document.querySelector('.username__form').style.display = 'none';
-    //     document.getElementById('main-content').style.display = 'block';
-    // } else {
-    //     alert('Пожалуйста, введите имя пользователя.');
-    // }
-}
-
-window.addEventListener('load', function() {
-    const savedUsername = localStorage.getItem('username');
-    if (savedUsername) {
-        const usernameInput = document.getElementById('usernameInput');
-        usernameInput.value = savedUsername;
-    }
-});
-
 document.addEventListener("DOMContentLoaded", function() {
     console.log('Событие DOMContentLoaded сработало.');
-    const savedUsername = localStorage.getItem('username');
+    const user_id = localStorage.getItem('user_id');
+    console.log('user_id:', user_id);
+    
     function loadData() {
         fetch('data.json')
             .then(response => response.json())
@@ -287,8 +263,33 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
     loadData();
-    const savedTotalCalories = JSON.parse(localStorage.getItem('totalCalories'));
+
     
+    const dateCalendarInput = document.getElementById('dateCalendar');
+    const submitDateButton = document.getElementById('submit-date');
+    
+    const today = new Date().toISOString().split('T')[0];
+    dateCalendarInput.value = today;
+    submitDateButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        const selectedDate = dateCalendarInput.value;
+        localStorage.setItem('selectedDate', selectedDate);
+        const savedTotalCalories = JSON.parse(localStorage.getItem('totalCalories' + selectedDate));
+        if (savedTotalCalories) {
+            updateTotalCaloriesDisplay(savedTotalCalories);
+        } else {
+            updateTotalCaloriesDisplay({ breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
+                lunch: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
+                dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 } });
+        }
+    });
+
+    const savedDate = localStorage.getItem('selectedDate');
+    if (savedDate) {
+        dateCalendarInput.value = savedDate;
+    }
+    const selectedDate = dateCalendarInput.value;
+    const savedTotalCalories = JSON.parse(localStorage.getItem('totalCalories' + selectedDate));
     if (savedTotalCalories) {
         updateTotalCaloriesDisplay(savedTotalCalories);
     } else {
@@ -442,7 +443,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const protein = (grams / 100) * proteinPer100g;
         const fat = (grams / 100) * fatPer100g;
         const carbo = (grams / 100) * carbPer100g;
-
+        const user_id = localStorage.getItem('user_id');
         const productData = {
             name: selectedProductInfo.name,
             calories: calories,
@@ -451,19 +452,21 @@ document.addEventListener("DOMContentLoaded", function() {
             carbohydrates: carbo,
             grams: grams,
             mealType: selectedProductInfo.mealType
+            // user_id: user_id 
         };
-
+        const date = localStorage.getItem('selectedDate');
         if (!validateProductData(productData)) {
             console.error('Некорректные данные о продукте.');
             return;
         }
+
         const url = `http://localhost:3000/products`;
         fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({username:localStorage.getItem('username'), product:productData})
+                body: JSON.stringify({userID: user_id, product:productData, date: date})
             })
             .then(response => {
                 if (!response.ok) {

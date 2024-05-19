@@ -25,11 +25,12 @@ func main() {
 }
 
 type Storage interface {
-	InsertProduct(username string, product models.Product) error
-	GetProducts(username, mealtype string) ([]models.Product, error)
-	GetProduct(username, id string) (models.Product, error)
-	GetSumCalories(username, mealtype string) (float64, float64, float64, float64, error)
-	DeleteProduct(username, id string) error
+	AuthUser(username, password string) (int, error)
+	InsertProduct(userID int, product models.Product, date string) error
+	GetProducts(userID int, mealtype string, date string) ([]models.Product, error)
+	GetProduct(userID int, productID int, date string) (models.Product, error)
+	GetSumCalories(userID int, mealtype string, date string) (float64, float64, float64, float64, error)
+	DeleteProduct(userID int, productID int, date string) error
 }
 
 func NewDB(host, port, username, password, dbname string) (Storage, error) {

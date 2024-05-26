@@ -269,7 +269,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const submitDateButton = document.getElementById('submit-date');
     
     const today = new Date().toISOString().split('T')[0];
-    dateCalendarInput.value = today;
+
+    const savedDate = localStorage.getItem('selectedDate');
+    dateCalendarInput.value = savedDate ? savedDate : today;
+
     submitDateButton.addEventListener('click', function(event) {
         event.preventDefault();
         const selectedDate = dateCalendarInput.value;
@@ -278,24 +281,24 @@ document.addEventListener("DOMContentLoaded", function() {
         if (savedTotalCalories) {
             updateTotalCaloriesDisplay(savedTotalCalories);
         } else {
-            updateTotalCaloriesDisplay({ breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
+            updateTotalCaloriesDisplay({
+                breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
                 lunch: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
-                dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 } });
+                dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 } 
+            });
         }
     });
 
-    const savedDate = localStorage.getItem('selectedDate');
-    if (savedDate) {
-        dateCalendarInput.value = savedDate;
-    }
     const selectedDate = dateCalendarInput.value;
     const savedTotalCalories = JSON.parse(localStorage.getItem('totalCalories' + selectedDate));
     if (savedTotalCalories) {
         updateTotalCaloriesDisplay(savedTotalCalories);
     } else {
-        updateTotalCaloriesDisplay({ breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
+        updateTotalCaloriesDisplay({
+            breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
             lunch: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
-            dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 } });
+            dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }
+        });
     }
 
     const items = document.querySelectorAll('.services__item');

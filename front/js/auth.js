@@ -13,13 +13,16 @@ async function submitUsername() {
         if (response.ok) {
             const data = await response.json();
             console.log('User ID:', data.user_id);
-            localStorage.setItem('user_id', data.user_id);
-            window.location.href = 'food';
+            sessionStorage.setItem('user_id', data.user_id);
+            window.location.href = 'food'; 
         } else {
+            const errorData = await response.json();
             console.error('Error:', response.statusText);
+            alert(`Ошибка: ${errorData.message || response.statusText}`);
         }
     } catch (error) {
         console.error('Fetch error:', error);
+        alert('Произошла ошибка при отправке данных. Пожалуйста, попробуйте снова.');
     }
 }
 

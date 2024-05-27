@@ -164,17 +164,16 @@ function updateTotalCaloriesDisplay(totalCalories) {
     proteinDisplay.textContent = totalProteinSum.toFixed(2);
     fatDisplay.textContent = totalFatSum.toFixed(2);
     carbDisplay.textContent = totalCarbohydrateSum.toFixed(2);
-    
-    localStorage.setItem('totalCalories', JSON.stringify(totalCalories));
+    const selectedDate = sessionStorage.getItem('selectedDate');
+    sessionStorage.setItem('totalCalories' + selectedDate, JSON.stringify(totalCalories));
 }
 
 
 function openProductsModal(mealType) {
     document.getElementById("modal__productBackdrop").style.display = "block";
     console.log('Meal type in openProductsModal:', mealType);
-    const user_id = localStorage.getItem('user_id');
-    console.log('user_id:', user_id);
-    fetch(`http://localhost:3000/products?mealtype=${mealType}&user_id=${localStorage.getItem('user_id')}&date=${localStorage.getItem('selectedDate')}`)
+    const user_id = sessionStorage.getItem('user_id');
+    fetch(`http://localhost:3000/products?mealtype=${mealType}&user_id=${sessionStorage.getItem('user_id')}&date=${sessionStorage.getItem('selectedDate')}`)
         .then(response => response.json())
         .then(data => {
             console.log('Data received from server:', data);
@@ -221,7 +220,7 @@ function openProductsModal(mealType) {
         .catch(error => console.error('Ошибка при загрузке продуктов:', error));
 }
 function deleteProduct(productId, mealType) {
-    fetch(`http://localhost:3000/products?id=${productId}&user_id=${localStorage.getItem('user_id')}&date=${localStorage.getItem('selectedDate')}`, {
+    fetch(`http://localhost:3000/products?id=${productId}&user_id=${sessionStorage.getItem('user_id')}&date=${sessionStorage.getItem('selectedDate')}`, {
         method: 'DELETE',
     })
     .then(response => {
@@ -234,7 +233,7 @@ function deleteProduct(productId, mealType) {
         console.log('Продукт успешно удален:', data);
         openProductsModal(mealType);
         updateTotalCaloriesDisplay(data.totalCalories);
-        localStorage.setItem('products', JSON.stringify(data.products));
+        sessionStorage.setItem('products', JSON.stringify(data.products));
     })
     .catch(error => console.error('Ошибка при удалении продукта:', error));
 }
@@ -247,11 +246,43 @@ function closeProductsModal() {
     modal.style.display = "none";
 }
 
+
+// Функция для сохранения данных о весе пользователя
+function saveData() {
+    const initialHeight = parseFloat(document.getElementById('initialHeight').value);
+    const initialGender = document.getElementById('initialGender').value;
+    const initialWeight = parseFloat(document.getElementById('initialWeight').value);
+    const currentWeight = parseFloat(document.getElementById('currentWeight').value);
+    const targetWeight = parseFloat(document.getElementById('targetWeight').value);
+
+    // Сохраняем данные о весе пользователя в локальном хранилище
+    sessionStorage.setItem('initialHeight', initialHeight);
+    sessionStorage.setItem('initialGender', initialGender);
+    sessionStorage.setItem('initialWeight', initialWeight);
+    sessionStorage.setItem('currentWeight', currentWeight);
+    sessionStorage.setItem('targetWeight', targetWeight);
+
+    initializeDisplay();
+}
+
+
+
+function initializeDisplay() {
+    const storedCurrentWeight = sessionStorage.getItem('currentWeight');
+    const storedTargetWeight = sessionStorage.getItem('targetWeight');
+
+    if (storedCurrentWeight) {
+        currentWeightDisplay.textContent = ` ${storedCurrentWeight} кг`;
+    }
+
+    if (storedTargetWeight) {
+        targetWeightDisplay.textContent = ` ${storedTargetWeight} кг`;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     console.log('Событие DOMContentLoaded сработало.');
-    const user_id = localStorage.getItem('user_id');
-    console.log('user_id:', user_id);
-    
+    const user_id = sessionStorage.getItem('user_id');
     function loadData() {
         fetch('data.json')
             .then(response => response.json())
@@ -263,44 +294,132 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
     loadData();
-
-    
     const dateCalendarInput = document.getElementById('dateCalendar');
     const submitDateButton = document.getElementById('submit-date');
     
     const today = new Date().toISOString().split('T')[0];
 
-    const savedDate = localStorage.getItem('selectedDate');
-    dateCalendarInput.value = savedDate ? savedDate : today;
+    let savedDate = sessionStorage.getItem('selectedDate');
+    if (!savedDate) {
+        savedDate = today;
+        sessionStorage.setItem('selectedDate', savedDate);
+    }
+    
+    dateCalendarInput.value = savedDate;
 
     submitDateButton.addEventListener('click', function(event) {
         event.preventDefault();
         const selectedDate = dateCalendarInput.value;
-        localStorage.setItem('selectedDate', selectedDate);
-        const savedTotalCalories = JSON.parse(localStorage.getItem('totalCalories' + selectedDate));
+        sessionStorage.setItem('selectedDate', selectedDate);
+        const savedTotalCalories = JSON.parse(sessionStorage.getItem('totalCalories' + selectedDate));
         if (savedTotalCalories) {
             updateTotalCaloriesDisplay(savedTotalCalories);
         } else {
             updateTotalCaloriesDisplay({
-                breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
-                lunch: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
-                dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 } 
+                breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 },
+                lunch: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 },
+                dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }
             });
         }
     });
 
     const selectedDate = dateCalendarInput.value;
-    const savedTotalCalories = JSON.parse(localStorage.getItem('totalCalories' + selectedDate));
+    
+    const savedTotalCalories = JSON.parse(sessionStorage.getItem('totalCalories' + selectedDate));
     if (savedTotalCalories) {
         updateTotalCaloriesDisplay(savedTotalCalories);
     } else {
         updateTotalCaloriesDisplay({
-            breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
-            lunch: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }, 
+            breakfast: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 },
+            lunch: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 },
             dinner: { calories: 0, protein: 0, fat: 0, carbohydrate: 0 }
         });
     }
+    const addWeightBtn = document.getElementById('addWeightBtn');
+    const weightModal = document.getElementById('weightModal');
+    const closeWeight = document.querySelector('.close-weight');
+    const weightForm = document.getElementById('weightForm');
+    const currentWeightDisplay = document.getElementById('currentWeightDisplay');
+    const targetWeightDisplay = document.getElementById('targetWeightDisplay');
+    const alertModal = document.getElementById('alertModal');
+    const closeAlert = document.querySelector('.close-alert');
+    const alertMessage = document.getElementById('alertMessage');
+    const saveAnywayBtn = document.getElementById('saveAnywayBtn');
 
+    let initialHeight, initialGender, initialWeight, currentWeight, targetWeight;
+    
+    function openWeightModal() {
+        weightModal.style.display = 'block';
+    }
+
+    function closeWeightModal() {
+        weightModal.style.display = 'none';
+    }
+
+    function openAlertModal(message) {
+        alertMessage.textContent = message;
+        alertModal.style.display = 'block';
+    }
+
+    function closeAlertModal() {
+        alertModal.style.display = 'none';
+    }
+
+    addWeightBtn.addEventListener('click', function(event) {
+        event.preventDefault(); 
+        openWeightModal();
+    });
+
+    closeWeight.addEventListener('click', function() {
+        closeWeightModal();
+    });
+
+   
+    closeAlert.addEventListener('click', function() {
+        closeAlertModal();
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target === weightModal) {
+            closeWeightModal();
+        } else if (event.target === alertModal) {
+            closeAlertModal();
+        }
+    });
+
+    weightForm.addEventListener('submit', function(event) {
+        event.preventDefault(); 
+
+        initialHeight = parseFloat(document.getElementById('initialHeight').value);
+        initialGender = document.getElementById('initialGender').value;
+        initialWeight = parseFloat(document.getElementById('initialWeight').value);
+        currentWeight = parseFloat(document.getElementById('currentWeight').value);
+        targetWeight = parseFloat(document.getElementById('targetWeight').value);
+
+        let normalWeight;
+        if (initialGender === 'male') {
+            normalWeight = 0.9 * (initialHeight-100);
+        } else if (initialGender === 'female') {
+            normalWeight = 0.85 * (initialHeight-100);
+        }
+
+        if (targetWeight < normalWeight) {
+            const message = `Ваш желанный вес (${targetWeight} кг) ниже нормы (${normalWeight.toFixed(2)} кг). Пожалуйста, пересмотрите свою цель.`;
+            openAlertModal(message);
+        } else {
+            saveData();
+            closeWeightModal();
+        }
+
+        saveAnywayBtn.addEventListener('click', function() {
+            saveData();
+            closeAlertModal();
+            closeWeightModal();
+        });
+    });
+
+    
+    initializeDisplay();
     const items = document.querySelectorAll('.services__item');
     const interval = 300;
     const observer = new IntersectionObserver(handleIntersection);
@@ -424,29 +543,29 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('confirmButton').addEventListener('click', function() {
         const gramsInput = document.getElementById('caloriesInput').value.trim();
         const grams = parseFloat(gramsInput);
-
+    
         if (isNaN(grams)) {
             console.error('Некорректное количество грамм.');
             return;
         }
-
+    
         const selectedProductInfo = JSON.parse(document.getElementById('selectedProductInfo').value);
-
+    
         if (!selectedProductInfo) {
             console.error('Некорректные данные о продукте.');
             return;
         }
-
+    
         const caloriesPer100g = selectedProductInfo.calories;
         const proteinPer100g = selectedProductInfo.protein;
         const fatPer100g = selectedProductInfo.fat;
         const carbPer100g = selectedProductInfo.carbohydrates;
-
+    
         const calories = (grams / 100) * caloriesPer100g;
         const protein = (grams / 100) * proteinPer100g;
         const fat = (grams / 100) * fatPer100g;
         const carbo = (grams / 100) * carbPer100g;
-        const user_id = localStorage.getItem('user_id');
+    
         const productData = {
             name: selectedProductInfo.name,
             calories: calories,
@@ -455,37 +574,38 @@ document.addEventListener("DOMContentLoaded", function() {
             carbohydrates: carbo,
             grams: grams,
             mealType: selectedProductInfo.mealType
-            // user_id: user_id 
         };
-        const date = localStorage.getItem('selectedDate');
+    
+        const date = sessionStorage.getItem('selectedDate');
         if (!validateProductData(productData)) {
             console.error('Некорректные данные о продукте.');
             return;
         }
-
+    
         const url = `http://localhost:3000/products`;
         fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({userID: user_id, product:productData, date: date})
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Ошибка при сохранении данных о продукте на сервере.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Данные о продукте успешно сохранены в базе данных:', data);
-                updateTotalCaloriesDisplay(data.totalCalories);
-                closeModal();
-            })
-            .catch(error => {
-                console.error('Произошла ошибка при сохранении данных о продукте на сервере:', error);
-            });
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userID: sessionStorage.getItem('user_id'), product: productData, date: date })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка при сохранении данных о продукте на сервере.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Данные о продукте успешно сохранены в базе данных:', data);
+            updateTotalCaloriesDisplay(data.totalCalories);
+            closeModal();
+        })
+        .catch(error => {
+            console.error('Произошла ошибка при сохранении данных о продукте на сервере:', error);
+        });
     });
+    
     
 
     document.querySelector('.arrow-down').addEventListener('click', function(event) {
